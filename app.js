@@ -126,12 +126,8 @@ async function loadRestaurants(location, locationName) {
     state.selectedCategory = "전체";
     elements.saveLocationButton.disabled = false;
     elements.dataStatus.textContent = state.restaurants.length
-      ? state.provider === "kakao"
-        ? `카카오 식당 ${state.restaurants.length}곳을 거리순으로 표시합니다.`
-        : `무료 데모(OpenStreetMap) 식당 ${state.restaurants.length}곳을 표시합니다.`
-      : state.provider === "kakao"
-        ? "카카오에서 500m 안의 식당을 찾지 못했습니다."
-        : "무료 데모 데이터에서 500m 안의 식당을 찾지 못했습니다.";
+      ? `카카오 식당 ${state.restaurants.length}곳을 거리순으로 표시합니다.`
+      : "카카오에서 500m 안의 식당을 찾지 못했습니다.";
   } catch (error) {
     state.restaurants = [];
     elements.dataStatus.textContent = error.message;
@@ -309,7 +305,6 @@ function pickRestaurant() {
 }
 
 function mapUrl(restaurant) {
-  if (restaurant.source === "openstreetmap") return restaurant.placeUrl;
   return (
     restaurant.placeUrl ||
     `https://map.kakao.com/link/search/${encodeURIComponent(restaurant.name)}`

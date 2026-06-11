@@ -6,11 +6,6 @@ const {
   geocodeAddress,
   reverseGeocode,
 } = require("./lib/kakao-local");
-const {
-  fetchOpenStreetMapRestaurants,
-  geocodeAddress: geocodeOpenStreetMap,
-  reverseGeocode: reverseOpenStreetMap,
-} = require("./lib/openstreetmap");
 
 const host = "127.0.0.1";
 const port = Number(process.env.PORT || 8000);
@@ -56,21 +51,14 @@ const server = http.createServer(async (request, response) => {
     }
 
     try {
-      const hasKakaoKey = Boolean(process.env.KAKAO_REST_API_KEY);
-      const restaurants = hasKakaoKey
-        ? await fetchKakaoRestaurants({
-            latitude,
-            longitude,
-            radius,
-            apiKey: process.env.KAKAO_REST_API_KEY,
-          })
-        : await fetchOpenStreetMapRestaurants({
-            latitude,
-            longitude,
-            radius,
-          });
+      const restaurants = await fetchKakaoRestaurants({
+        latitude,
+        longitude,
+        radius,
+        apiKey: process.env.KAKAO_REST_API_KEY,
+      });
       sendJson(response, 200, {
-        provider: hasKakaoKey ? "kakao" : "openstreetmap",
+        provider: "kakao",
         restaurants,
       });
     } catch (error) {
@@ -84,30 +72,27 @@ const server = http.createServer(async (request, response) => {
     try {
       if (action === "search") {
         const query = requestUrl.searchParams.get("query") || "";
-        const hasKakaoKey = Boolean(process.env.KAKAO_REST_API_KEY);
-        const result = hasKakaoKey
-          ? await geocodeAddress(query, process.env.KAKAO_REST_API_KEY)
-          : await geocodeOpenStreetMap(query);
+        const result = await geocodeAddress(
+          query,
+          process.env.KAKAO_REST_API_KEY,
+        );
         sendJson(response, 200, {
           ...result,
-          provider: hasKakaoKey ? "kakao" : "openstreetmap",
+          provider: "kakao",
         });
         return;
       }
       if (action === "reverse") {
         const latitude = Number(requestUrl.searchParams.get("lat"));
         const longitude = Number(requestUrl.searchParams.get("lon"));
-        const hasKakaoKey = Boolean(process.env.KAKAO_REST_API_KEY);
-        const name = hasKakaoKey
-          ? await reverseGeocode(
-              latitude,
-              longitude,
-              process.env.KAKAO_REST_API_KEY,
-            )
-          : await reverseOpenStreetMap(latitude, longitude);
+        const name = await reverseGeocode(
+          latitude,
+          longitude,
+          process.env.KAKAO_REST_API_KEY,
+        );
         sendJson(response, 200, {
           name,
-          provider: hasKakaoKey ? "kakao" : "openstreetmap",
+          provider: "kakao",
         });
         return;
       }

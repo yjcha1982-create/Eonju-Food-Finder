@@ -1,8 +1,6 @@
 import kakaoLocal from "../lib/kakao-local.js";
-import openStreetMap from "../lib/openstreetmap.js";
 
 const { fetchKakaoRestaurants } = kakaoLocal;
-const { fetchOpenStreetMapRestaurants } = openStreetMap;
 
 export const maxDuration = 30;
 
@@ -24,23 +22,16 @@ export default {
     }
 
     try {
-      const hasKakaoKey = Boolean(process.env.KAKAO_REST_API_KEY);
-      const restaurants = hasKakaoKey
-        ? await fetchKakaoRestaurants({
-            latitude,
-            longitude,
-            radius,
-            apiKey: process.env.KAKAO_REST_API_KEY,
-          })
-        : await fetchOpenStreetMapRestaurants({
-            latitude,
-            longitude,
-            radius,
-          });
+      const restaurants = await fetchKakaoRestaurants({
+        latitude,
+        longitude,
+        radius,
+        apiKey: process.env.KAKAO_REST_API_KEY,
+      });
 
       return Response.json(
         {
-          provider: hasKakaoKey ? "kakao" : "openstreetmap",
+          provider: "kakao",
           restaurants,
         },
         {
