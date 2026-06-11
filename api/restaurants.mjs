@@ -42,8 +42,17 @@ export default {
       );
     } catch (error) {
       console.error("restaurant search failed", error);
+      const apiKey = process.env.KAKAO_REST_API_KEY || "";
       return Response.json(
-        { error: error?.message || "restaurant search failed" },
+        {
+          error: error?.message || "restaurant search failed",
+          kakaoCode: error?.kakaoCode,
+          keyConfigured: Boolean(apiKey),
+          keyLength: apiKey.length,
+          keyHint: apiKey
+            ? `${apiKey.slice(0, 4)}...${apiKey.slice(-4)}`
+            : null,
+        },
         { status: error?.statusCode || 500 },
       );
     }

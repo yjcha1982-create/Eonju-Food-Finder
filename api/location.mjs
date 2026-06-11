@@ -47,8 +47,17 @@ export default {
       return Response.json({ error: "invalid action" }, { status: 400 });
     } catch (error) {
       console.error("location lookup failed", error);
+      const configuredKey = process.env.KAKAO_REST_API_KEY || "";
       return Response.json(
-        { error: error?.message || "location lookup failed" },
+        {
+          error: error?.message || "location lookup failed",
+          kakaoCode: error?.kakaoCode,
+          keyConfigured: Boolean(configuredKey),
+          keyLength: configuredKey.length,
+          keyHint: configuredKey
+            ? `${configuredKey.slice(0, 4)}...${configuredKey.slice(-4)}`
+            : null,
+        },
         { status: error?.statusCode || 500 },
       );
     }
