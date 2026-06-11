@@ -51,6 +51,7 @@ const elements = {
 };
 
 let toastTimer;
+let searchTimer;
 
 function showToast(message) {
   elements.toast.textContent = message;
@@ -99,9 +100,14 @@ async function reverseGeocode(latitude, longitude) {
   return result.name;
 }
 
-async function fetchNearbyRestaurants(latitude, longitude, locationName) {
+async function fetchNearbyRestaurants(
+  latitude,
+  longitude,
+  locationName,
+  query = "",
+) {
   const data = await fetchJson(
-    `/api/restaurants?lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}&radius=${state.searchRadius}&location=${encodeURIComponent(locationName)}`,
+    `/api/restaurants?lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}&radius=${state.searchRadius}&location=${encodeURIComponent(locationName)}&query=${encodeURIComponent(query)}`,
   );
   state.provider = data.provider;
   return data.restaurants.map((place) => ({
@@ -126,6 +132,7 @@ async function loadRestaurants(location, locationName) {
       location.latitude,
       location.longitude,
       locationName,
+      elements.searchInput.value.trim(),
     );
     state.selectedCategory = "전체";
     elements.saveLocationButton.disabled = false;
@@ -188,16 +195,28 @@ function togglePreference(id) {
 
 function applyFilters() {
   const search = elements.searchInput.value.trim().toLowerCase();
+  const compactSearch = search.replace(/\s+/g, "");
   state.filtered = state.restaurants.filter(
-    (restaurant) =>
-      (state.selectedCategory === "전체" ||
-        restaurant.category === state.selectedCategory) &&
-      (!search ||
-        restaurant.name.toLowerCase().includes(search) ||
-        restaurant.category.toLowerCase().includes(search) ||
-        restaurant.cuisine.toLowerCase().includes(search)) &&
-      (!elements.likeOnlyFilter.checked ||
-        preferenceFor(restaurant.id) === "like"),
+    (restaurant) => {
+      const searchable = [
+        restaurant.name,
+        restaurant.category,
+        restaurant.cuisine,
+        restaurant.address,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase();
+      return (
+        (state.selectedCategory === "전체" ||
+          restaurant.category === state.selectedCategory) &&
+        (!search ||
+          searchable.includes(search) ||
+          searchable.replace(/\s+/g, "").includes(compactSearch)) &&
+        (!elements.likeOnlyFilter.checked ||
+          preferenceFor(restaurant.id) === "like")
+      );
+    },
   );
 
   if (elements.sortSelect.value === "name") {
@@ -365,7 +384,28 @@ async function initialize() {
   elements.currentLocationButton.addEventListener("click", requestCurrentLocation);
   elements.saveLocationButton.addEventListener("click", saveCurrentLocation);
   elements.pickButton.addEventListener("click", pickRestaurant);
-  elements.searchInput.addEventListener("input", applyFilters);
+  elements.searchInput.addEventListener("input", () => {
+    applyFilters();
+    clearTimeout(searchTimer);
+    const query = elements.searchInput.value.trim();
+    if (!query || !state.position) return;
+    searchTimer = setTimeout(async () => {
+      setLoading(true, `"${query}" 카카오맵 검색 중입니다.`);
+      try {
+        state.restaurants = await fetchNearbyRestaurants(
+          state.position.latitude,
+          state.position.longitude,
+          state.locationName,
+          query,
+        );
+        applyFilters();
+      } catch (error) {
+        showToast(error.message);
+      } finally {
+        setLoading(false);
+      }
+    }, 450);
+  });
   elements.likeOnlyFilter.addEventListener("change", applyFilters);
   elements.sortSelect.addEventListener("change", applyFilters);
 

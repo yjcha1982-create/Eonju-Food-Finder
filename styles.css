@@ -593,11 +593,18 @@ footer {
   }
 
   .restaurant-row {
-    grid-template-columns: 54px minmax(0, 1fr) auto auto;
+    grid-template-columns: 52px minmax(0, 1fr) auto;
     gap: 8px;
   }
 
   .map-link {
-    display: none;
+    grid-column: 2 / 3;
+    width: fit-content;
+    padding: 7px 10px;
+  }
+
+  .preference-button {
+    grid-column: 3;
+    grid-row: 1 / 3;
   }
 }

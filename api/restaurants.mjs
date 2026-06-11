@@ -9,6 +9,7 @@ export default {
     const url = new URL(request.url);
     const latitude = Number(url.searchParams.get("lat"));
     const longitude = Number(url.searchParams.get("lon"));
+    const query = (url.searchParams.get("query") || "").trim();
     const radius = Math.min(
       1000,
       Math.max(100, Number(url.searchParams.get("radius") || 500)),
@@ -26,6 +27,7 @@ export default {
         latitude,
         longitude,
         radius,
+        query,
         apiKey: process.env.KAKAO_REST_API_KEY,
       });
 

@@ -40,6 +40,7 @@ const server = http.createServer(async (request, response) => {
     const latitude = Number(requestUrl.searchParams.get("lat"));
     const longitude = Number(requestUrl.searchParams.get("lon"));
     const locationName = requestUrl.searchParams.get("location") || "";
+    const query = (requestUrl.searchParams.get("query") || "").trim();
     const radius = Math.min(
       1000,
       Math.max(100, Number(requestUrl.searchParams.get("radius") || 500)),
@@ -55,6 +56,7 @@ const server = http.createServer(async (request, response) => {
         latitude,
         longitude,
         radius,
+        query,
         apiKey: process.env.KAKAO_REST_API_KEY,
       });
       sendJson(response, 200, {
