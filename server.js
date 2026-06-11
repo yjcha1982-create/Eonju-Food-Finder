@@ -41,7 +41,7 @@ const server = http.createServer(async (request, response) => {
     const longitude = Number(requestUrl.searchParams.get("lon"));
     const locationName = requestUrl.searchParams.get("location") || "";
     const radius = Math.min(
-      500,
+      1000,
       Math.max(100, Number(requestUrl.searchParams.get("radius") || 500)),
     );
 

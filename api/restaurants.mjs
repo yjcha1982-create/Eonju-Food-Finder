@@ -10,7 +10,7 @@ export default {
     const latitude = Number(url.searchParams.get("lat"));
     const longitude = Number(url.searchParams.get("lon"));
     const radius = Math.min(
-      500,
+      1000,
       Math.max(100, Number(url.searchParams.get("radius") || 500)),
     );
 

@@ -1,4 +1,4 @@
-const SEARCH_RADIUS = 500;
+const DEFAULT_RADIUS = 500;
 const SAVED_LOCATION_KEY = "lunch-saved-location";
 const PREFERENCES_KEY = "lunch-preferences";
 
@@ -23,6 +23,7 @@ const state = {
   position: null,
   locationName: "",
   selectedCategory: "전체",
+  searchRadius: DEFAULT_RADIUS,
   loading: false,
   preferences: JSON.parse(localStorage.getItem(PREFERENCES_KEY) || "{}"),
 };
@@ -34,11 +35,14 @@ const elements = {
   saveLocationButton: document.querySelector("#saveLocationButton"),
   locationLabel: document.querySelector("#locationLabel"),
   dataStatus: document.querySelector("#dataStatus"),
+  radiusBadge: document.querySelector("#radiusBadge"),
+  radiusFilters: document.querySelector("#radiusFilters"),
   categoryFilters: document.querySelector("#categoryFilters"),
   pickButton: document.querySelector("#pickButton"),
   pickCount: document.querySelector("#pickCount"),
   pickResult: document.querySelector("#pickResult"),
   searchInput: document.querySelector("#searchInput"),
+  likeOnlyFilter: document.querySelector("#likeOnlyFilter"),
   sortSelect: document.querySelector("#sortSelect"),
   resultCount: document.querySelector("#resultCount"),
   emptyState: document.querySelector("#emptyState"),
@@ -97,7 +101,7 @@ async function reverseGeocode(latitude, longitude) {
 
 async function fetchNearbyRestaurants(latitude, longitude, locationName) {
   const data = await fetchJson(
-    `/api/restaurants?lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}&radius=${SEARCH_RADIUS}&location=${encodeURIComponent(locationName)}`,
+    `/api/restaurants?lat=${encodeURIComponent(latitude)}&lon=${encodeURIComponent(longitude)}&radius=${state.searchRadius}&location=${encodeURIComponent(locationName)}`,
   );
   state.provider = data.provider;
   return data.restaurants.map((place) => ({
@@ -115,7 +119,7 @@ async function loadRestaurants(location, locationName) {
   state.locationName = locationName;
   elements.locationLabel.textContent = locationName;
   elements.saveLocationButton.disabled = true;
-  setLoading(true, "카카오에서 500m 안의 식당을 찾고 있습니다.");
+  setLoading(true, `카카오에서 ${formatRadius(state.searchRadius)} 안의 식당을 찾고 있습니다.`);
 
   try {
     state.restaurants = await fetchNearbyRestaurants(
@@ -127,7 +131,7 @@ async function loadRestaurants(location, locationName) {
     elements.saveLocationButton.disabled = false;
     elements.dataStatus.textContent = state.restaurants.length
       ? `카카오 식당 ${state.restaurants.length}곳을 거리순으로 표시합니다.`
-      : "카카오에서 500m 안의 식당을 찾지 못했습니다.";
+      : `카카오에서 ${formatRadius(state.searchRadius)} 안의 식당을 찾지 못했습니다.`;
   } catch (error) {
     state.restaurants = [];
     elements.dataStatus.textContent = error.message;
@@ -191,7 +195,9 @@ function applyFilters() {
       (!search ||
         restaurant.name.toLowerCase().includes(search) ||
         restaurant.category.toLowerCase().includes(search) ||
-        restaurant.cuisine.toLowerCase().includes(search)),
+        restaurant.cuisine.toLowerCase().includes(search)) &&
+      (!elements.likeOnlyFilter.checked ||
+        preferenceFor(restaurant.id) === "like"),
   );
 
   if (elements.sortSelect.value === "name") {
@@ -311,6 +317,10 @@ function mapUrl(restaurant) {
   );
 }
 
+function formatRadius(radius) {
+  return radius >= 1000 ? `${radius / 1000}km` : `${radius}m`;
+}
+
 function escapeHtml(value) {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -356,7 +366,21 @@ async function initialize() {
   elements.saveLocationButton.addEventListener("click", saveCurrentLocation);
   elements.pickButton.addEventListener("click", pickRestaurant);
   elements.searchInput.addEventListener("input", applyFilters);
+  elements.likeOnlyFilter.addEventListener("change", applyFilters);
   elements.sortSelect.addEventListener("change", applyFilters);
+
+  elements.radiusFilters.addEventListener("click", async (event) => {
+    const button = event.target.closest("[data-radius]");
+    if (!button || state.loading) return;
+    state.searchRadius = Number(button.dataset.radius);
+    elements.radiusBadge.textContent = `도보 ${formatRadius(state.searchRadius)}`;
+    elements.radiusFilters
+      .querySelectorAll("[data-radius]")
+      .forEach((item) => item.classList.toggle("active", item === button));
+    if (state.position) {
+      await loadRestaurants(state.position, state.locationName);
+    }
+  });
 
   elements.categoryFilters.addEventListener("click", (event) => {
     const button = event.target.closest("[data-category]");
