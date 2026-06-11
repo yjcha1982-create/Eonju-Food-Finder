@@ -1,0 +1,8 @@
+.env
+.env.*
+!.env.example
+server.log
+node_modules/
+.vercel/
+*.png
+.edge-*/
