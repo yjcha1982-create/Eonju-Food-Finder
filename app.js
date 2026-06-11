@@ -1,4 +1,4 @@
-const DEFAULT_RADIUS = 500;
+const DEFAULT_RADIUS = 400;
 const SAVED_LOCATION_KEY = "lunch-saved-location";
 const PREFERENCES_KEY = "lunch-preferences";
 
