@@ -7,6 +7,6 @@
     "start": "node --env-file-if-exists=.env server.js"
   },
   "engines": {
-    "node": ">=20"
+    "node": "22.x"
   }
 }
