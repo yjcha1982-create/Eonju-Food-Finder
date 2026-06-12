@@ -411,13 +411,19 @@ select:focus {
 
 .picker-section {
   display: grid;
-  grid-template-columns: 1fr 0.9fr;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.9fr);
   gap: 28px;
   margin-top: 16px;
   padding: 30px;
   background:
     linear-gradient(120deg, var(--picker-start), var(--picker-end)),
     url("./assets/lunch-table.jpg") center / cover;
+}
+
+.picker-copy,
+.pick-result {
+  width: 100%;
+  min-width: 0;
 }
 
 .picker-copy > p:not(.eyebrow) {
@@ -427,11 +433,19 @@ select:focus {
 
 .category-row {
   display: flex;
+  width: 100%;
+  max-width: 100%;
   gap: 7px;
   overflow-x: auto;
+  overscroll-behavior-inline: contain;
   margin: 0 -4px 14px;
   padding: 0 4px 6px;
-  scrollbar-width: thin;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.category-row::-webkit-scrollbar {
+  display: none;
 }
 
 .category-chip {
@@ -506,6 +520,7 @@ select:focus {
 
 .pick-result {
   display: grid;
+  align-self: stretch;
   min-height: 220px;
   place-items: center;
   padding: 24px;
