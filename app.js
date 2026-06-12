@@ -22,7 +22,7 @@ const state = {
   filtered: [],
   position: null,
   locationName: "",
-  selectedCategory: "전체",
+  selectedCategories: new Set(),
   searchRadius: DEFAULT_RADIUS,
   loading: false,
   preferences: JSON.parse(localStorage.getItem(PREFERENCES_KEY) || "{}"),
@@ -35,8 +35,7 @@ const elements = {
   saveLocationButton: document.querySelector("#saveLocationButton"),
   locationLabel: document.querySelector("#locationLabel"),
   dataStatus: document.querySelector("#dataStatus"),
-  radiusBadge: document.querySelector("#radiusBadge"),
-  radiusFilters: document.querySelector("#radiusFilters"),
+  radiusSelect: document.querySelector("#radiusSelect"),
   categoryFilters: document.querySelector("#categoryFilters"),
   pickButton: document.querySelector("#pickButton"),
   pickCount: document.querySelector("#pickCount"),
@@ -134,7 +133,6 @@ async function loadRestaurants(location, locationName) {
       locationName,
       elements.searchInput.value.trim(),
     );
-    state.selectedCategory = "전체";
     elements.saveLocationButton.disabled = false;
     elements.dataStatus.textContent = state.restaurants.length
       ? `카카오 식당 ${state.restaurants.length}곳을 거리순으로 표시합니다.`
@@ -208,8 +206,8 @@ function applyFilters() {
         .join(" ")
         .toLowerCase();
       return (
-        (state.selectedCategory === "전체" ||
-          restaurant.category === state.selectedCategory) &&
+        (state.selectedCategories.size === 0 ||
+          state.selectedCategories.has(restaurant.category)) &&
         (!search ||
           searchable.includes(search) ||
           searchable.replace(/\s+/g, "").includes(compactSearch)) &&
@@ -249,8 +247,20 @@ function renderCategories() {
           : state.restaurants.filter((item) => item.category === category).length;
       if (category !== "전체" && count === 0) return "";
       return `
-        <button class="category-chip ${state.selectedCategory === category ? "active" : ""}"
-          type="button" data-category="${category}">
+        <button class="category-chip ${
+          category === "전체"
+            ? state.selectedCategories.size === 0
+              ? "active"
+              : ""
+            : state.selectedCategories.has(category)
+              ? "active"
+              : ""
+        }" type="button" data-category="${category}"
+          aria-pressed="${
+            category === "전체"
+              ? state.selectedCategories.size === 0
+              : state.selectedCategories.has(category)
+          }">
           ${meta.emoji} ${category} <small>${count}</small>
         </button>`;
     })
@@ -409,14 +419,9 @@ async function initialize() {
   elements.likeOnlyFilter.addEventListener("change", applyFilters);
   elements.sortSelect.addEventListener("change", applyFilters);
 
-  elements.radiusFilters.addEventListener("click", async (event) => {
-    const button = event.target.closest("[data-radius]");
-    if (!button || state.loading) return;
-    state.searchRadius = Number(button.dataset.radius);
-    elements.radiusBadge.textContent = `도보 ${formatRadius(state.searchRadius)}`;
-    elements.radiusFilters
-      .querySelectorAll("[data-radius]")
-      .forEach((item) => item.classList.toggle("active", item === button));
+  elements.radiusSelect.addEventListener("change", async (event) => {
+    if (state.loading) return;
+    state.searchRadius = Number(event.target.value);
     if (state.position) {
       await loadRestaurants(state.position, state.locationName);
     }
@@ -425,7 +430,14 @@ async function initialize() {
   elements.categoryFilters.addEventListener("click", (event) => {
     const button = event.target.closest("[data-category]");
     if (!button) return;
-    state.selectedCategory = button.dataset.category;
+    const category = button.dataset.category;
+    if (category === "전체") {
+      state.selectedCategories.clear();
+    } else if (state.selectedCategories.has(category)) {
+      state.selectedCategories.delete(category);
+    } else {
+      state.selectedCategories.add(category);
+    }
     applyFilters();
   });
 
