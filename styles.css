@@ -436,16 +436,8 @@ select:focus {
   width: 100%;
   max-width: 100%;
   gap: 7px;
-  overflow-x: auto;
-  overscroll-behavior-inline: contain;
-  margin: 0 -4px 14px;
-  padding: 0 4px 6px;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.category-row::-webkit-scrollbar {
-  display: none;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
 }
 
 .category-chip {

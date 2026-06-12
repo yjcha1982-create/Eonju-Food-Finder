@@ -691,21 +691,6 @@ async function initialize() {
     }
     applyFilters();
   });
-  elements.categoryFilters.addEventListener(
-    "wheel",
-    (event) => {
-      if (
-        Math.abs(event.deltaY) <= Math.abs(event.deltaX) ||
-        elements.categoryFilters.scrollWidth <=
-          elements.categoryFilters.clientWidth
-      ) {
-        return;
-      }
-      event.preventDefault();
-      elements.categoryFilters.scrollLeft += event.deltaY;
-    },
-    { passive: false },
-  );
 
   function handlePreferenceClick(event) {
     const button = event.target.closest("[data-preference-id]");
