@@ -41,7 +41,7 @@ const elements = {
   pickCount: document.querySelector("#pickCount"),
   pickResult: document.querySelector("#pickResult"),
   searchInput: document.querySelector("#searchInput"),
-  likeOnlyFilter: document.querySelector("#likeOnlyFilter"),
+  shuffleModes: document.querySelectorAll('input[name="shuffleMode"]'),
   sortSelect: document.querySelector("#sortSelect"),
   resultCount: document.querySelector("#resultCount"),
   emptyState: document.querySelector("#emptyState"),
@@ -185,10 +185,12 @@ function preferenceFor(id) {
   return state.preferences[id] || "neutral";
 }
 
-function togglePreference(id) {
-  state.preferences[id] = preferenceFor(id) === "like" ? "neutral" : "like";
+function setPreference(id, preference) {
+  state.preferences[id] =
+    preferenceFor(id) === preference ? "neutral" : preference;
   localStorage.setItem(PREFERENCES_KEY, JSON.stringify(state.preferences));
   applyFilters();
+  syncPreferenceButtons();
 }
 
 function applyFilters() {
@@ -210,9 +212,7 @@ function applyFilters() {
           state.selectedCategories.has(restaurant.category)) &&
         (!search ||
           searchable.includes(search) ||
-          searchable.replace(/\s+/g, "").includes(compactSearch)) &&
-        (!elements.likeOnlyFilter.checked ||
-          preferenceFor(restaurant.id) === "like")
+          searchable.replace(/\s+/g, "").includes(compactSearch))
       );
     },
   );
@@ -232,10 +232,22 @@ function applyFilters() {
 
   renderCategories();
   renderRestaurants();
-  elements.pickButton.disabled = state.loading || state.filtered.length === 0;
-  elements.pickCount.textContent = state.filtered.length
-    ? `${state.filtered.length}곳 중 무작위`
+  const candidates = getPickCandidates();
+  elements.pickButton.disabled = state.loading || candidates.length === 0;
+  elements.pickCount.textContent = candidates.length
+    ? `${candidates.length}곳 중 무작위`
     : "선택 가능한 식당 없음";
+}
+
+function getPickCandidates() {
+  const likedOnly =
+    document.querySelector('input[name="shuffleMode"]:checked')?.value ===
+    "liked";
+  return state.filtered.filter((restaurant) =>
+    likedOnly
+      ? preferenceFor(restaurant.id) === "like"
+      : preferenceFor(restaurant.id) !== "dislike",
+  );
 }
 
 function renderCategories() {
@@ -295,23 +307,24 @@ function renderRestaurants() {
           <a class="map-link" href="${mapUrl(restaurant)}" target="_blank" rel="noopener">
             ${restaurant.source === "kakao" ? "카카오맵" : "지도"}
           </a>
-          <button class="preference-button ${preferenceFor(restaurant.id) === "like" ? "active" : ""}"
-            type="button" data-like-id="${escapeHtml(restaurant.id)}"
-            aria-label="${escapeHtml(restaurant.name)} 선호">♥</button>
+          <div class="preference-actions">
+            ${preferenceButtons(restaurant)}
+          </div>
         </article>`;
     })
     .join("");
 }
 
 function pickRestaurant() {
-  if (!state.filtered.length) return;
+  const candidates = getPickCandidates();
+  if (!candidates.length) return;
 
   elements.pickButton.disabled = true;
   elements.pickResult.classList.add("shuffling");
   let ticks = 0;
   const interval = setInterval(() => {
     const candidate =
-      state.filtered[Math.floor(Math.random() * state.filtered.length)];
+      candidates[Math.floor(Math.random() * candidates.length)];
     elements.pickResult.innerHTML = `
       <div>
         <div class="winner-emoji">${CATEGORY_META[candidate.category].emoji}</div>
@@ -324,7 +337,7 @@ function pickRestaurant() {
       elements.pickResult.classList.remove("shuffling");
       elements.pickButton.disabled = false;
       const winner =
-        state.filtered[Math.floor(Math.random() * state.filtered.length)];
+        candidates[Math.floor(Math.random() * candidates.length)];
       elements.pickResult.innerHTML = `
         <div>
           <div class="winner-emoji">${CATEGORY_META[winner.category].emoji}</div>
@@ -334,9 +347,33 @@ function pickRestaurant() {
           <a class="winner-link" href="${mapUrl(winner)}" target="_blank" rel="noopener">
             카카오맵에서 보기
           </a>
+          <div class="winner-preferences">
+            ${preferenceButtons(winner)}
+          </div>
         </div>`;
     }
   }, 80);
+}
+
+function preferenceButtons(restaurant) {
+  const preference = preferenceFor(restaurant.id);
+  return `
+    <button class="preference-button like ${preference === "like" ? "active" : ""}"
+      type="button" data-preference-id="${escapeHtml(restaurant.id)}"
+      data-preference="like" aria-label="${escapeHtml(restaurant.name)} 좋아요">♥</button>
+    <button class="preference-button dislike ${preference === "dislike" ? "active" : ""}"
+      type="button" data-preference-id="${escapeHtml(restaurant.id)}"
+      data-preference="dislike" aria-label="${escapeHtml(restaurant.name)} 싫어요">−</button>
+  `;
+}
+
+function syncPreferenceButtons() {
+  document.querySelectorAll("[data-preference-id]").forEach((button) => {
+    button.classList.toggle(
+      "active",
+      preferenceFor(button.dataset.preferenceId) === button.dataset.preference,
+    );
+  });
 }
 
 function mapUrl(restaurant) {
@@ -416,7 +453,9 @@ async function initialize() {
       }
     }, 450);
   });
-  elements.likeOnlyFilter.addEventListener("change", applyFilters);
+  elements.shuffleModes.forEach((input) =>
+    input.addEventListener("change", applyFilters),
+  );
   elements.sortSelect.addEventListener("change", applyFilters);
 
   elements.radiusSelect.addEventListener("change", async (event) => {
@@ -441,11 +480,14 @@ async function initialize() {
     applyFilters();
   });
 
-  elements.restaurantList.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-like-id]");
+  function handlePreferenceClick(event) {
+    const button = event.target.closest("[data-preference-id]");
     if (!button) return;
-    togglePreference(button.dataset.likeId);
-  });
+    setPreference(button.dataset.preferenceId, button.dataset.preference);
+  }
+
+  elements.restaurantList.addEventListener("click", handlePreferenceClick);
+  elements.pickResult.addEventListener("click", handlePreferenceClick);
 
   const saved = JSON.parse(localStorage.getItem(SAVED_LOCATION_KEY) || "null");
   if (saved?.latitude && saved?.longitude && saved?.name) {

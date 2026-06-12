@@ -75,6 +75,17 @@
 
           <div id="categoryFilters" class="category-row" aria-label="음식 카테고리"></div>
 
+          <div class="shuffle-mode" aria-label="랜덤 선택 범위">
+            <label>
+              <input type="radio" name="shuffleMode" value="all" checked />
+              <span>일반 뽑기</span>
+            </label>
+            <label>
+              <input type="radio" name="shuffleMode" value="liked" />
+              <span>♥ 좋아요만</span>
+            </label>
+          </div>
+
           <button id="pickButton" class="pick-button" type="button" disabled>
             <span>오늘의 점심 뽑기</span>
             <small id="pickCount">식당을 불러오는 중</small>
@@ -97,10 +108,6 @@
           </div>
           <div class="list-tools">
             <input id="searchInput" type="search" placeholder="가게 이름 검색" />
-            <label class="like-filter">
-              <input id="likeOnlyFilter" type="checkbox" />
-              <span>♥ 좋아요만</span>
-            </label>
             <select id="sortSelect" aria-label="정렬">
               <option value="distance">가까운 순</option>
               <option value="preferred">선호 우선</option>
