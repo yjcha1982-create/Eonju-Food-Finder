@@ -10,8 +10,12 @@
     <meta name="theme-color" content="#ff6330" />
     <title>오늘 뭐 먹지?</title>
     <script>
-      document.documentElement.dataset.theme =
-        localStorage.getItem("lunch-theme") || "orange";
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem("lunch-theme") || "orange";
+      } catch {
+        document.documentElement.dataset.theme = "orange";
+      }
     </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

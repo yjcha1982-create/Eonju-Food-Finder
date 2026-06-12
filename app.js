@@ -215,7 +215,19 @@ function setTheme(theme) {
   document
     .querySelector('meta[name="theme-color"]')
     ?.setAttribute("content", THEME_COLORS[selectedTheme]);
-  localStorage.setItem(THEME_KEY, selectedTheme);
+  try {
+    localStorage.setItem(THEME_KEY, selectedTheme);
+  } catch {
+    // The selected theme still applies when browser storage is unavailable.
+  }
+}
+
+function getSavedTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY) || "orange";
+  } catch {
+    return "orange";
+  }
 }
 
 function setLoading(loading, message = "") {
@@ -565,7 +577,7 @@ function saveCurrentLocation() {
 }
 
 async function initialize() {
-  setTheme(localStorage.getItem(THEME_KEY) || "orange");
+  setTheme(getSavedTheme());
   renderCategories();
   applyFilters();
 

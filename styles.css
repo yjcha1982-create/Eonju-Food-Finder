@@ -10,6 +10,7 @@
   --soft: #ffede4;
   --button-text: #ffffff;
   --ink-button-text: #ffffff;
+  --accent-label: #df481c;
   --result-bg: rgba(255, 255, 255, 0.9);
   --topbar-bg: rgba(255, 253, 249, 0.94);
   --picker-start: rgba(255, 247, 236, 0.97);
@@ -31,6 +32,7 @@
   --soft: #fff7bd;
   --button-text: #241f18;
   --ink-button-text: #ffffff;
+  --accent-label: #6f5d00;
   --picker-start: rgba(255, 251, 229, 0.97);
   --focus-ring: rgba(254, 229, 0, 0.2);
   --accent-shadow: rgba(151, 129, 0, 0.2);
@@ -46,6 +48,7 @@
   --line: #cfe3dd;
   --page: #e9f1ef;
   --soft: #d9f2eb;
+  --accent-label: #0b6f5d;
   --picker-start: rgba(234, 248, 244, 0.97);
   --focus-ring: rgba(22, 160, 133, 0.14);
   --accent-shadow: rgba(22, 160, 133, 0.22);
@@ -61,6 +64,7 @@
   --line: #d5deec;
   --page: #eaf0f7;
   --soft: #dce9ff;
+  --accent-label: #1858c9;
   --picker-start: rgba(237, 244, 255, 0.97);
   --focus-ring: rgba(52, 120, 246, 0.14);
   --accent-shadow: rgba(52, 120, 246, 0.22);
@@ -79,6 +83,7 @@
   --soft: #312d49;
   --button-text: #17151d;
   --ink-button-text: #17151d;
+  --accent-label: #c0b5ff;
   --result-bg: rgba(31, 29, 38, 0.94);
   --topbar-bg: rgba(28, 27, 34, 0.94);
   --picker-start: rgba(37, 35, 48, 0.97);
@@ -117,7 +122,7 @@ select {
 
 button:disabled {
   cursor: wait;
-  opacity: 0.55;
+  opacity: 0.68;
 }
 
 .sr-only {
@@ -168,6 +173,10 @@ button:disabled {
   font-weight: 700;
 }
 
+.theme-select {
+  min-width: 112px;
+}
+
 .compact-select select {
   padding: 3px 22px 3px 6px;
   border: 0;
@@ -209,7 +218,7 @@ button:disabled {
 
 .eyebrow {
   margin: 0 0 5px;
-  color: var(--orange);
+  color: var(--accent-label);
   font-family: Montserrat, sans-serif;
   font-size: 0.66rem;
   font-weight: 800;
@@ -490,7 +499,7 @@ select:focus {
 }
 
 .list-heading h2 span {
-  color: var(--orange);
+  color: var(--accent-label);
   font-family: Montserrat, sans-serif;
   font-size: 1rem;
 }
@@ -695,8 +704,12 @@ footer {
   }
 
   .compact-select select {
-    max-width: 72px;
+    max-width: 86px;
     padding-right: 14px;
+  }
+
+  .theme-select {
+    min-width: 90px;
   }
 
   .theme-select > span {
