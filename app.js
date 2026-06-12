@@ -4,18 +4,158 @@ const PREFERENCES_KEY = "lunch-preferences";
 
 const CATEGORY_META = {
   전체: { emoji: "🍽️", keywords: [] },
-  고기구이: { emoji: "🥩", keywords: ["육류", "고기", "삼겹살", "갈비", "곱창", "막창", "구이", "바베큐", "정육"] },
-  국밥해장: { emoji: "🍲", keywords: ["국밥", "해장국", "감자탕", "순대국", "설렁탕", "곰탕", "찌개", "전골"] },
-  한식: { emoji: "🍚", keywords: ["한식", "백반", "한정식", "보리밥", "쌈밥", "도시락", "생선구이"] },
-  중식: { emoji: "🥟", keywords: ["중식", "중국", "짜장", "짬뽕", "마라", "양꼬치"] },
-  일식: { emoji: "🍣", keywords: ["일식", "일본", "초밥", "스시", "라멘", "돈까스", "돈카츠", "우동", "회"] },
-  양식: { emoji: "🍝", keywords: ["양식", "이탈리안", "파스타", "피자", "스테이크", "멕시칸"] },
-  베트남태국: { emoji: "🍜", keywords: ["베트남", "태국", "쌀국수", "팟타이", "아시아", "동남아"] },
-  면분식: { emoji: "🍜", keywords: ["국수", "냉면", "칼국수", "김밥", "분식", "떡볶이", "만두"] },
-  버거치킨: { emoji: "🍔", keywords: ["패스트푸드", "햄버거", "버거", "샌드위치", "치킨", "피자"] },
-  카페: { emoji: "☕", keywords: ["카페", "커피", "베이커리", "디저트"] },
-  기타식사: { emoji: "🥘", keywords: ["음식점", "뷔페", "푸드코트", "요리"] },
+  "고기·구이": {
+    emoji: "🥩",
+    keywords: [
+      "육류",
+      "고기",
+      "삼겹살",
+      "갈비",
+      "곱창",
+      "막창",
+      "바베큐",
+      "정육",
+      "불고기",
+      "닭갈비",
+    ],
+  },
+  "국밥·해장": {
+    emoji: "🍲",
+    keywords: [
+      "국밥",
+      "해장국",
+      "감자탕",
+      "순대국",
+      "설렁탕",
+      "곰탕",
+      "갈비탕",
+      "육개장",
+    ],
+  },
+  "찌개·전골": {
+    emoji: "🥘",
+    keywords: ["찌개", "전골", "부대찌개", "김치찌개", "된장찌개", "샤브샤브"],
+  },
+  "국수·냉면": {
+    emoji: "🍜",
+    keywords: [
+      "국수",
+      "냉면",
+      "칼국수",
+      "막국수",
+      "콩국수",
+      "잔치국수",
+      "수제비",
+    ],
+  },
+  "분식·김밥": {
+    emoji: "🍙",
+    keywords: ["분식", "김밥", "떡볶이", "순대", "라볶이", "만두"],
+  },
+  돈까스: {
+    emoji: "🍛",
+    keywords: ["돈까스", "돈가스", "돈카츠", "카레"],
+  },
+  중식: {
+    emoji: "🥟",
+    keywords: ["중식", "중국", "짜장", "짬뽕", "마라", "양꼬치", "딤섬"],
+  },
+  "일식·라멘": {
+    emoji: "🍜",
+    keywords: ["라멘", "우동", "소바", "일본식라면", "일본식"],
+  },
+  "초밥·일식": {
+    emoji: "🍣",
+    keywords: ["초밥", "스시", "일식", "일본"],
+  },
+  "회·해산물": {
+    emoji: "🐟",
+    keywords: [
+      "횟집",
+      "생선회",
+      "해산물",
+      "수산물",
+      "생선구이",
+      "장어구이",
+      "아구찜",
+      "아귀찜",
+      "낙지",
+      "쭈꾸미",
+      "주꾸미",
+      "게요리",
+    ],
+  },
+  "백반·한식": {
+    emoji: "🍚",
+    keywords: [
+      "한식",
+      "백반",
+      "한정식",
+      "보리밥",
+      "쌈밥",
+      "도시락",
+      "가정식",
+    ],
+  },
+  "양식·파스타": {
+    emoji: "🍝",
+    keywords: ["양식", "이탈리안", "파스타", "스테이크", "멕시칸", "브런치"],
+  },
+  "베트남·태국": {
+    emoji: "🍜",
+    keywords: [
+      "베트남",
+      "태국",
+      "쌀국수",
+      "팟타이",
+      "아시아",
+      "동남아",
+      "인도네시아",
+    ],
+  },
+  "인도·커리": {
+    emoji: "🍛",
+    keywords: ["인도음식", "인도요리", "인도커리", "난 ", "탄두리"],
+  },
+  치킨: {
+    emoji: "🍗",
+    keywords: ["치킨", "통닭", "닭강정"],
+  },
+  "버거·샌드위치": {
+    emoji: "🍔",
+    keywords: ["햄버거", "버거", "샌드위치", "토스트", "패스트푸드"],
+  },
+  피자: {
+    emoji: "🍕",
+    keywords: ["피자"],
+  },
+  "카페·디저트": {
+    emoji: "☕",
+    keywords: ["카페", "커피", "베이커리", "디저트", "제과", "제빵"],
+  },
+  기타: { emoji: "🥘", keywords: ["음식점", "뷔페", "푸드코트", "요리"] },
 };
+
+const CATEGORY_MATCH_ORDER = [
+  "회·해산물",
+  "고기·구이",
+  "국밥·해장",
+  "찌개·전골",
+  "국수·냉면",
+  "분식·김밥",
+  "돈까스",
+  "치킨",
+  "피자",
+  "버거·샌드위치",
+  "중식",
+  "일식·라멘",
+  "초밥·일식",
+  "베트남·태국",
+  "인도·커리",
+  "양식·파스타",
+  "백반·한식",
+  "카페·디저트",
+];
 
 const state = {
   restaurants: [],
@@ -71,18 +211,18 @@ async function fetchJson(url) {
   const response = await fetch(url);
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(data.error || `네이버 API 요청 오류 (${response.status})`);
+    throw new Error(data.error || `카카오 API 요청 오류 (${response.status})`);
   }
   return data;
 }
 
 function classifyRestaurant(place) {
   const text = `${place.categoryPath || ""} ${place.name || ""}`.toLowerCase();
-  for (const [category, meta] of Object.entries(CATEGORY_META)) {
-    if (category === "전체" || category === "기타식사") continue;
+  for (const category of CATEGORY_MATCH_ORDER) {
+    const meta = CATEGORY_META[category];
     if (meta.keywords.some((keyword) => text.includes(keyword))) return category;
   }
-  return place.categoryGroup === "CE7" ? "카페" : "기타식사";
+  return place.categoryGroup === "CE7" ? "카페·디저트" : "기타";
 }
 
 async function searchAddress(query) {

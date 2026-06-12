@@ -250,11 +250,14 @@ select:focus {
 .category-row {
   display: flex;
   gap: 7px;
-  flex-wrap: wrap;
-  margin-bottom: 20px;
+  overflow-x: auto;
+  margin: 0 -4px 14px;
+  padding: 0 4px 6px;
+  scrollbar-width: thin;
 }
 
 .category-chip {
+  flex: 0 0 auto;
   padding: 7px 11px;
   border: 1px solid var(--line);
   border-radius: 999px;
