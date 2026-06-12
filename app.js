@@ -1,6 +1,14 @@
 const DEFAULT_RADIUS = 400;
 const SAVED_LOCATION_KEY = "lunch-saved-location";
 const PREFERENCES_KEY = "lunch-preferences";
+const THEME_KEY = "lunch-theme";
+const THEME_COLORS = {
+  orange: "#ff6330",
+  kakao: "#fee500",
+  mint: "#16a085",
+  blue: "#3478f6",
+  dark: "#9d8cff",
+};
 
 const CATEGORY_META = {
   전체: { emoji: "🍽️", keywords: [] },
@@ -176,6 +184,7 @@ const elements = {
   locationLabel: document.querySelector("#locationLabel"),
   dataStatus: document.querySelector("#dataStatus"),
   radiusSelect: document.querySelector("#radiusSelect"),
+  themeSelect: document.querySelector("#themeSelect"),
   categoryFilters: document.querySelector("#categoryFilters"),
   pickButton: document.querySelector("#pickButton"),
   pickCount: document.querySelector("#pickCount"),
@@ -197,6 +206,16 @@ function showToast(message) {
   elements.toast.classList.add("show");
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => elements.toast.classList.remove("show"), 3000);
+}
+
+function setTheme(theme) {
+  const selectedTheme = THEME_COLORS[theme] ? theme : "orange";
+  document.documentElement.dataset.theme = selectedTheme;
+  elements.themeSelect.value = selectedTheme;
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute("content", THEME_COLORS[selectedTheme]);
+  localStorage.setItem(THEME_KEY, selectedTheme);
 }
 
 function setLoading(loading, message = "") {
@@ -546,6 +565,7 @@ function saveCurrentLocation() {
 }
 
 async function initialize() {
+  setTheme(localStorage.getItem(THEME_KEY) || "orange");
   renderCategories();
   applyFilters();
 
@@ -570,6 +590,9 @@ async function initialize() {
 
   elements.currentLocationButton.addEventListener("click", requestCurrentLocation);
   elements.saveLocationButton.addEventListener("click", saveCurrentLocation);
+  elements.themeSelect.addEventListener("change", (event) => {
+    setTheme(event.target.value);
+  });
   elements.pickButton.addEventListener("click", pickRestaurant);
   elements.searchInput.addEventListener("input", () => {
     applyFilters();

@@ -6,7 +6,86 @@
   --ink: #27231f;
   --muted: #7b746b;
   --line: #e8e0d6;
+  --page: #f3eee7;
+  --soft: #ffede4;
+  --button-text: #ffffff;
+  --ink-button-text: #ffffff;
+  --result-bg: rgba(255, 255, 255, 0.9);
+  --topbar-bg: rgba(255, 253, 249, 0.94);
+  --picker-start: rgba(255, 247, 236, 0.97);
+  --picker-end: rgba(255, 253, 249, 0.92);
+  --focus-ring: rgba(255, 99, 48, 0.12);
+  --accent-shadow: rgba(255, 99, 48, 0.23);
   --shadow: 0 14px 40px rgba(74, 54, 33, 0.09);
+}
+
+:root[data-theme="kakao"] {
+  --orange: #fee500;
+  --orange-dark: #5b4b00;
+  --cream: #fffbe5;
+  --paper: #fffef8;
+  --ink: #241f18;
+  --muted: #746e64;
+  --line: #e8e1c5;
+  --page: #f4f1e7;
+  --soft: #fff7bd;
+  --button-text: #241f18;
+  --ink-button-text: #ffffff;
+  --picker-start: rgba(255, 251, 229, 0.97);
+  --focus-ring: rgba(254, 229, 0, 0.2);
+  --accent-shadow: rgba(151, 129, 0, 0.2);
+}
+
+:root[data-theme="mint"] {
+  --orange: #16a085;
+  --orange-dark: #0b6f5d;
+  --cream: #eaf8f4;
+  --paper: #fbfffd;
+  --ink: #17332d;
+  --muted: #617872;
+  --line: #cfe3dd;
+  --page: #e9f1ef;
+  --soft: #d9f2eb;
+  --picker-start: rgba(234, 248, 244, 0.97);
+  --focus-ring: rgba(22, 160, 133, 0.14);
+  --accent-shadow: rgba(22, 160, 133, 0.22);
+}
+
+:root[data-theme="blue"] {
+  --orange: #3478f6;
+  --orange-dark: #1858c9;
+  --cream: #edf4ff;
+  --paper: #fbfdff;
+  --ink: #17253d;
+  --muted: #66758e;
+  --line: #d5deec;
+  --page: #eaf0f7;
+  --soft: #dce9ff;
+  --picker-start: rgba(237, 244, 255, 0.97);
+  --focus-ring: rgba(52, 120, 246, 0.14);
+  --accent-shadow: rgba(52, 120, 246, 0.22);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --orange: #9d8cff;
+  --orange-dark: #c0b5ff;
+  --cream: #252330;
+  --paper: #1c1b22;
+  --ink: #f4f1fa;
+  --muted: #aaa5b5;
+  --line: #393641;
+  --page: #111116;
+  --soft: #312d49;
+  --button-text: #17151d;
+  --ink-button-text: #17151d;
+  --result-bg: rgba(31, 29, 38, 0.94);
+  --topbar-bg: rgba(28, 27, 34, 0.94);
+  --picker-start: rgba(37, 35, 48, 0.97);
+  --picker-end: rgba(28, 27, 34, 0.95);
+  --focus-ring: rgba(157, 140, 255, 0.18);
+  --accent-shadow: rgba(157, 140, 255, 0.22);
+  --shadow: 0 14px 40px rgba(0, 0, 0, 0.28);
 }
 
 * {
@@ -21,7 +100,7 @@ body {
   margin: 0;
   min-width: 320px;
   color: var(--ink);
-  background: #f3eee7;
+  background: var(--page);
   font-family: "Gowun Dodum", system-ui, sans-serif;
 }
 
@@ -62,7 +141,7 @@ button:disabled {
   justify-content: space-between;
   padding: 0 max(24px, calc((100% - 1040px) / 2));
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 253, 249, 0.94);
+  background: var(--topbar-bg);
   backdrop-filter: blur(12px);
 }
 
@@ -73,25 +152,33 @@ button:disabled {
   text-decoration: none;
 }
 
-.radius-select {
+.header-tools,
+.compact-select {
   display: flex;
   gap: 6px;
   align-items: center;
+}
+
+.compact-select {
   padding: 4px 6px 4px 11px;
   border-radius: 999px;
   color: var(--orange-dark);
-  background: #ffede4;
+  background: var(--soft);
   font-size: 0.8rem;
   font-weight: 700;
 }
 
-.radius-select select {
+.compact-select select {
   padding: 3px 22px 3px 6px;
   border: 0;
   outline: 0;
   color: var(--orange-dark);
   background: transparent;
   font-weight: 700;
+}
+
+.theme-select > span {
+  color: var(--orange);
 }
 
 .page {
@@ -172,13 +259,14 @@ h2 {
   border: 1px solid var(--line);
   border-radius: 11px;
   outline: none;
-  background: white;
+  color: var(--ink);
+  background: var(--paper);
 }
 
 input:focus,
 select:focus {
   border-color: var(--orange);
-  box-shadow: 0 0 0 3px rgba(255, 99, 48, 0.12);
+  box-shadow: 0 0 0 3px var(--focus-ring);
 }
 
 .primary-button,
@@ -191,7 +279,7 @@ select:focus {
 
 .primary-button {
   border: 0;
-  color: white;
+  color: var(--button-text);
   background: var(--orange);
 }
 
@@ -202,7 +290,7 @@ select:focus {
 .secondary-button {
   border: 1px solid var(--line);
   color: var(--ink);
-  background: white;
+  background: var(--paper);
 }
 
 .location-summary {
@@ -238,7 +326,7 @@ select:focus {
   margin-top: 16px;
   padding: 30px;
   background:
-    linear-gradient(120deg, rgba(255, 247, 236, 0.97), rgba(255, 253, 249, 0.92)),
+    linear-gradient(120deg, var(--picker-start), var(--picker-end)),
     url("./assets/lunch-table.jpg") center / cover;
 }
 
@@ -261,11 +349,12 @@ select:focus {
   padding: 7px 11px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: white;
+  color: var(--ink);
+  background: var(--paper);
 }
 
 .category-chip.active {
-  color: white;
+  color: var(--button-text);
   border-color: var(--orange);
   background: var(--orange);
 }
@@ -291,13 +380,14 @@ select:focus {
   padding: 7px 11px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: white;
+  color: var(--ink);
+  background: var(--paper);
   font-size: 0.82rem;
   cursor: pointer;
 }
 
 .shuffle-mode input:checked + span {
-  color: white;
+  color: var(--ink-button-text);
   border-color: var(--ink);
   background: var(--ink);
 }
@@ -311,9 +401,9 @@ select:focus {
   padding: 0 20px;
   border: 0;
   border-radius: 14px;
-  color: white;
+  color: var(--button-text);
   background: var(--orange);
-  box-shadow: 0 10px 24px rgba(255, 99, 48, 0.23);
+  box-shadow: 0 10px 24px var(--accent-shadow);
   font-size: 1.05rem;
   font-weight: 700;
 }
@@ -331,7 +421,7 @@ select:focus {
   padding: 24px;
   border: 1px solid rgba(232, 224, 214, 0.9);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--result-bg);
   text-align: center;
 }
 
@@ -343,7 +433,7 @@ select:focus {
   margin: 0 auto 10px;
   border-radius: 50%;
   color: var(--orange);
-  background: #ffede4;
+  background: var(--soft);
   font-size: 1.5rem;
   font-weight: 800;
 }
@@ -378,7 +468,7 @@ select:focus {
   display: inline-block;
   padding: 9px 14px;
   border-radius: 9px;
-  color: white;
+  color: var(--ink-button-text);
   background: var(--ink);
   text-decoration: none;
 }
@@ -460,7 +550,7 @@ select:focus {
   padding: 8px 11px;
   border-radius: 8px;
   color: var(--ink);
-  background: #f2ede6;
+  background: var(--soft);
   font-size: 0.82rem;
   text-decoration: none;
 }
@@ -472,11 +562,12 @@ select:focus {
   place-items: center;
   border: 1px solid var(--line);
   border-radius: 50%;
-  background: white;
+  color: var(--ink);
+  background: var(--paper);
 }
 
 .preference-button.active {
-  color: white;
+  color: var(--button-text);
   border-color: var(--orange);
   background: var(--orange);
 }
@@ -488,6 +579,7 @@ select:focus {
 }
 
 .preference-button.dislike.active {
+  color: white;
   border-color: #555;
   background: #555;
 }
@@ -537,7 +629,7 @@ footer {
   max-width: calc(100vw - 40px);
   padding: 12px 16px;
   border-radius: 10px;
-  color: white;
+  color: var(--ink-button-text);
   background: var(--ink);
   opacity: 0;
   transform: translateY(10px);
@@ -583,6 +675,34 @@ footer {
 }
 
 @media (max-width: 480px) {
+  .topbar {
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .brand {
+    font-size: 0.95rem;
+    white-space: nowrap;
+  }
+
+  .header-tools {
+    gap: 4px;
+  }
+
+  .compact-select {
+    padding-left: 7px;
+    font-size: 0.72rem;
+  }
+
+  .compact-select select {
+    max-width: 72px;
+    padding-right: 14px;
+  }
+
+  .theme-select > span {
+    display: none;
+  }
+
   .page {
     width: min(100% - 20px, 1040px);
     margin-top: 12px;
