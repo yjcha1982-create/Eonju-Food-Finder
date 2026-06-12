@@ -71,7 +71,6 @@
 }
 
 :root[data-theme="dark"] {
-  color-scheme: dark;
   --orange: #9d8cff;
   --orange-dark: #c0b5ff;
   --cream: #252330;
@@ -164,6 +163,96 @@ button:disabled {
   align-items: center;
 }
 
+.theme-picker {
+  position: relative;
+}
+
+.theme-button {
+  display: flex;
+  min-width: 96px;
+  height: 32px;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  color: var(--orange-dark);
+  background: var(--soft);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.theme-current-dot,
+.theme-swatch {
+  display: block;
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+}
+
+.theme-current-dot {
+  background: var(--orange);
+}
+
+.theme-menu {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 132px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+}
+
+.theme-menu[hidden] {
+  display: none;
+}
+
+.theme-menu button {
+  display: flex;
+  width: 100%;
+  gap: 9px;
+  align-items: center;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--ink);
+  background: transparent;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.theme-menu button:hover,
+.theme-menu button.active {
+  background: var(--soft);
+}
+
+.theme-swatch.orange {
+  background: #ff6330;
+}
+
+.theme-swatch.kakao {
+  background: #fee500;
+}
+
+.theme-swatch.mint {
+  background: #16a085;
+}
+
+.theme-swatch.blue {
+  background: #3478f6;
+}
+
+.theme-swatch.dark {
+  background: #27231f;
+}
+
 .compact-select {
   padding: 4px 6px 4px 11px;
   border-radius: 999px;
@@ -173,10 +262,6 @@ button:disabled {
   font-weight: 700;
 }
 
-.theme-select {
-  min-width: 112px;
-}
-
 .compact-select select {
   padding: 3px 22px 3px 6px;
   border: 0;
@@ -184,10 +269,6 @@ button:disabled {
   color: var(--orange-dark);
   background: transparent;
   font-weight: 700;
-}
-
-.theme-select > span {
-  color: var(--orange);
 }
 
 .page {
@@ -708,12 +789,9 @@ footer {
     padding-right: 14px;
   }
 
-  .theme-select {
-    min-width: 90px;
-  }
-
-  .theme-select > span {
-    display: none;
+  .theme-button {
+    min-width: 78px;
+    padding: 0 9px;
   }
 
   .page {

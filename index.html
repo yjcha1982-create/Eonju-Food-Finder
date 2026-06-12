@@ -30,16 +30,36 @@
     <header class="topbar">
       <a class="brand" href="#">🍚 오늘 뭐 먹지?</a>
       <div class="header-tools">
-        <label class="compact-select theme-select">
-          <span aria-hidden="true">●</span>
-          <select id="themeSelect" aria-label="화면 테마">
-            <option value="orange">주황</option>
-            <option value="kakao">카카오</option>
-            <option value="mint">민트</option>
-            <option value="blue">블루</option>
-            <option value="dark">다크</option>
-          </select>
-        </label>
+        <div class="theme-picker">
+          <button
+            id="themeButton"
+            class="theme-button"
+            type="button"
+            aria-label="화면 테마 선택"
+            aria-expanded="false"
+            aria-controls="themeMenu"
+          >
+            <span class="theme-current-dot" aria-hidden="true"></span>
+            <span id="themeLabel">주황</span>
+          </button>
+          <div id="themeMenu" class="theme-menu" role="menu" hidden>
+            <button type="button" data-theme-value="orange" role="menuitem">
+              <span class="theme-swatch orange"></span>주황
+            </button>
+            <button type="button" data-theme-value="kakao" role="menuitem">
+              <span class="theme-swatch kakao"></span>카카오
+            </button>
+            <button type="button" data-theme-value="mint" role="menuitem">
+              <span class="theme-swatch mint"></span>민트
+            </button>
+            <button type="button" data-theme-value="blue" role="menuitem">
+              <span class="theme-swatch blue"></span>블루
+            </button>
+            <button type="button" data-theme-value="dark" role="menuitem">
+              <span class="theme-swatch dark"></span>다크
+            </button>
+          </div>
+        </div>
         <label class="compact-select radius-select">
           <span>도보</span>
           <select id="radiusSelect" aria-label="검색 거리">

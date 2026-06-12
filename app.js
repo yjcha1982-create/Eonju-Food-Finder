@@ -9,6 +9,13 @@ const THEME_COLORS = {
   blue: "#3478f6",
   dark: "#9d8cff",
 };
+const THEME_LABELS = {
+  orange: "주황",
+  kakao: "카카오",
+  mint: "민트",
+  blue: "블루",
+  dark: "다크",
+};
 
 const CATEGORY_META = {
   전체: { emoji: "🍽️", keywords: [] },
@@ -184,7 +191,9 @@ const elements = {
   locationLabel: document.querySelector("#locationLabel"),
   dataStatus: document.querySelector("#dataStatus"),
   radiusSelect: document.querySelector("#radiusSelect"),
-  themeSelect: document.querySelector("#themeSelect"),
+  themeButton: document.querySelector("#themeButton"),
+  themeLabel: document.querySelector("#themeLabel"),
+  themeMenu: document.querySelector("#themeMenu"),
   categoryFilters: document.querySelector("#categoryFilters"),
   pickButton: document.querySelector("#pickButton"),
   pickCount: document.querySelector("#pickCount"),
@@ -211,7 +220,15 @@ function showToast(message) {
 function setTheme(theme) {
   const selectedTheme = THEME_COLORS[theme] ? theme : "orange";
   document.documentElement.dataset.theme = selectedTheme;
-  elements.themeSelect.value = selectedTheme;
+  elements.themeLabel.textContent = THEME_LABELS[selectedTheme];
+  elements.themeMenu
+    .querySelectorAll("[data-theme-value]")
+    .forEach((button) => {
+      button.classList.toggle(
+        "active",
+        button.dataset.themeValue === selectedTheme,
+      );
+    });
   document
     .querySelector('meta[name="theme-color"]')
     ?.setAttribute("content", THEME_COLORS[selectedTheme]);
@@ -220,6 +237,11 @@ function setTheme(theme) {
   } catch {
     // The selected theme still applies when browser storage is unavailable.
   }
+}
+
+function closeThemeMenu() {
+  elements.themeMenu.hidden = true;
+  elements.themeButton.setAttribute("aria-expanded", "false");
 }
 
 function getSavedTheme() {
@@ -602,8 +624,23 @@ async function initialize() {
 
   elements.currentLocationButton.addEventListener("click", requestCurrentLocation);
   elements.saveLocationButton.addEventListener("click", saveCurrentLocation);
-  elements.themeSelect.addEventListener("change", (event) => {
-    setTheme(event.target.value);
+  elements.themeButton.addEventListener("click", () => {
+    const willOpen = elements.themeMenu.hidden;
+    elements.themeMenu.hidden = !willOpen;
+    elements.themeButton.setAttribute("aria-expanded", String(willOpen));
+  });
+  elements.themeMenu.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-theme-value]");
+    if (!button) return;
+    setTheme(button.dataset.themeValue);
+    closeThemeMenu();
+    elements.themeButton.focus();
+  });
+  document.addEventListener("click", (event) => {
+    if (!event.target.closest(".theme-picker")) closeThemeMenu();
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeThemeMenu();
   });
   elements.pickButton.addEventListener("click", pickRestaurant);
   elements.searchInput.addEventListener("input", () => {
